@@ -40,6 +40,14 @@ class SettingsType extends AbstractType
             // If setting's value exists in data and setting isn't disabled
             if (array_key_exists($name, $options['data']) && !in_array($name, $options['disabled_settings'])) {
                 $fieldType = $configuration['type'];
+
+                // There is probably a better way to handle this... but I don't have the time ->jO
+                if (false === is_object($fieldType)) {
+                    $fieldType = '\\Symfony\\Component\\Form\\Extension\\Core\\Type\\'.ucfirst($fieldType).'Type';
+                } else {
+                    $fieldType = '\\'.get_class($fieldType);
+                }
+
                 $fieldOptions = $configuration['options'];
                 $fieldOptions['constraints'] = $configuration['constraints'];
 
