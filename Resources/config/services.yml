@@ -8,6 +8,7 @@ services:
             - "@doctrine.orm.entity_manager"
             - "@dmishh.settings.serializer"
             - "%settings_manager.settings%"
+            - "@translator.default"
 
     dmishh.settings.cached_settings_manager:
         class: Dmishh\SettingsBundle\Manager\CachedSettingsManager

@@ -15,6 +15,7 @@ use Dmishh\SettingsBundle\Exception\UnknownSettingException;
 use Dmishh\SettingsBundle\Exception\WrongScopeException;
 use Dmishh\SettingsBundle\Serializer\SerializerInterface;
 use Doctrine\Common\Persistence\ObjectManager;
+use Symfony\Bundle\FrameworkBundle\Translation\Translator;
 
 /**
  * Settings Manager provides settings management and persistence using Doctrine's Object Manager.
@@ -55,19 +56,27 @@ class SettingsManager implements SettingsManagerInterface
     private $settingsConfiguration;
 
     /**
+     * @var Translator
+     */
+    private $translator;
+
+    /**
      * @param ObjectManager $em
      * @param SerializerInterface $serializer
      * @param array $settingsConfiguration
+     * @param Translator $translator
      */
     public function __construct(
         ObjectManager $em,
         SerializerInterface $serializer,
-        array $settingsConfiguration = array()
+        array $settingsConfiguration = array(),
+        Translator $translator
     ) {
         $this->em = $em;
         $this->repository = $em->getRepository('Dmishh\SettingsBundle\Entity\Setting');
         $this->serializer = $serializer;
         $this->settingsConfiguration = $settingsConfiguration;
+        $this->translator = $translator;
     }
 
     /**
@@ -95,6 +104,10 @@ class SettingsManager implements SettingsManagerInterface
                 }
                 break;
         }
+
+        if (is_string($value) and strstr($value, "{$name}_choices")) {
+            return $this->translator->trans($value, [], 'settings');
+        };
 
         return $value === null ? $default : $value;
     }
