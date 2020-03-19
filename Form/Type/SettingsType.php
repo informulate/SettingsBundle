@@ -15,6 +15,7 @@ use Dmishh\SettingsBundle\Exception\SettingsException;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Bundle\FrameworkBundle\Translation\Translator;
 
 /**
  * Settings management form.
@@ -25,10 +26,12 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 class SettingsType extends AbstractType
 {
     protected $settingsConfiguration;
+    protected $translator;
 
-    public function __construct(array $settingsConfiguration)
+    public function __construct(array $settingsConfiguration, Translator $translator)
     {
         $this->settingsConfiguration = $settingsConfiguration;
+        $this->translator = $translator;
     }
 
     /**
@@ -71,12 +74,13 @@ class SettingsType extends AbstractType
 
                 // Choices I18n
                 if (!empty($fieldOptions['choices'])) {
-                    $fieldOptions['choices'] = array_map(
-                        function ($label) use ($fieldOptions) {
-                            return $fieldOptions['label'].'_choices.'.$label;
-                        },
-                        array_combine($fieldOptions['choices'], $fieldOptions['choices'])
-                    );
+                    $choices = [];
+                    foreach ($fieldOptions['choices'] as $choice) {
+                        $label = $fieldOptions['label'].'_choices.'.$choice;
+                        $choices[$this->translator->trans($label, [], 'settings')] = $choice;
+                    }
+
+                    $fieldOptions['choices'] = $choices;
                 }
                 $builder->add($name, $fieldType, $fieldOptions);
             }

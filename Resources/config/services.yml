@@ -26,6 +26,7 @@ services:
         class: Dmishh\SettingsBundle\Form\Type\SettingsType
         arguments:
             - "%settings_manager.settings%"
+            - "@translator.default"
         tags:
             - { name: form.type }
 
